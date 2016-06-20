@@ -1,0 +1,45 @@
+#!/bin/tcsh -f
+#BSUB -n <NCORES>
+#BSUB -R "span[ptile=16]"
+#BSUB -q regular
+#BSUB -N
+#BSUB -x
+#BSUB -a poe
+#BSUB -o roms.stdout.%J
+#BSUB -e roms.stderr.%J
+#BSUB -J <CASE>
+#BSUB -W <WALLTIME>
+#BSUB -P <PROJECTCODE>
+
+setenv CONTROLDIR <CDIR>
+
+#-------------------------------------------------------------------------
+# run the code
+mpirun.lsf ./oceanM <NAMELIST>  >&! log.<JOB>
+
+#-------------------------------------------------------------------------
+# control if run blew up or not
+
+set logfile = 'log.<JOB>'
+set blowup = `grep Blowing-up $logfile`
+
+if ( "$blowup" == '' ) then
+   echo '<RMANAGER> Job <JOB> finished OK'
+else
+   echo '<RMANAGER> Job <JOB> blew up'
+   exit 1
+endif
+
+#-------------------------------------------------------------------------
+# run post-processing in a separate job here ?
+
+#-------------------------------------------------------------------------
+# run finished : daisy chain with the new one
+
+cd $CONTROLDIR
+
+# run the next job 
+set job = <JOB>
+@ job++
+
+./<CASE>_ctl.py $job

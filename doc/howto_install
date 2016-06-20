@@ -1,0 +1,11 @@
+# run the install command at the root of this program
+# this will add the correct environment variables to your .bashrc/.cshrc 
+# and create your user space
+
+
+# test the installation :
+
+ipython
+>>> import libmanager
+
+# if there is no error, congrats you're all set !

@@ -1,0 +1,86 @@
+#-----------------------------------------------------------------------------------------
+# - First step - creating the framework for the simulation
+
+# open ipython
+
+# import the library
+import libmanager as lm
+
+# init the setup script
+setup = lm.setup_simulation()
+
+# if you are running on a machine where your login is different from the one in RMANAGER, then use
+setup = lm.setup_simulation(user=your_rmanager_name)
+
+# run the setup itself
+setup()
+
+# you'll be asked to answer questions on the prompt.
+# the manager will then create various directories, scripts using
+# the provided information
+
+# This is what you can expect to have :
+
+In [1]: import libmanager as lm
+
+In [2]: setup = lm.setup_simulation()
+Answer with one of these : ['yellowstone', 'triton16', 'triton24']
+On which supercomputer are we running ? 
+ >>> triton16
+RMANAGER is installed in :  /home/raphael/CONFIGS/RMANAGER/
+If this seems incorrect, please check your install, paths,...
+Your user space is  /home/raphael/CONFIGS/RMANAGER/user/raphael
+
+In [3]: setup()
+What is the domain name (CCS1, NWA, ...) ? 
+ >>> CCS1
+Do you want to use the naming assistant ? please answer y (yes) or n (no) 
+ >>> y
+What are your initials (e.g. John Doe -> JD) ? 
+ >>> RD
+Is this simulation an Hindcast (past) or Forecast (future) ? please answer H or F 
+ >>> F
+Is this simulation running an ice model ? please answer y (yes) or n (no) 
+ >>> n
+Is this simulation running a BGC model ? please answer y (yes) or n (no) 
+ >>> y
+Is this simulation running the fish model ? please answer y (yes) or n (no) 
+ >>> n
+What is the number of this experiment (number of times you run this domain) ? 
+ >>> 42
+Is this a Reference simulation, a Sensitivity experiment or a Test ? please answer R (reference), S (sensitivity) or T (testing) 
+ >>> T
+Name suggested would be :  CCS1-RD.FCob42T
+Are you ok with this name ? please answer y (yes) or n (no) 
+ >>> y
+Final name is :  CCS1-RD.FCob42T
+Where is the ROMS code installed ? 
+ >>> /home/raphael/MODELS/ROMS-FISH.git
+
+#-----------------------------------------------------------------------------------------
+# - second step - compiling the code
+
+# Go to the directory that has the name of your simulation (here CCS1-RD.FCob42T)
+# and copy the necessary *.h files into src (might be obtained from other simulations, ROMS/Apps, ...)
+# build the code :
+
+./build.bash
+
+#-----------------------------------------------------------------------------------------
+# - third step - copy the namelists 
+
+# your main namelist name have to be ocean_MYRUN.template (here ocean_CCS1-RD.FCob42T.template)
+# and goes in RMANAGER/user/your_login, other namelist and varinfo.dat will go in the same directory as your build.bash
+# namelist can be obtained from previous simulations,...
+
+#-----------------------------------------------------------------------------------------
+# - fourth step - edit runs.archive
+
+# and set the path to input files,...
+
+#-----------------------------------------------------------------------------------------
+# - fifth step - submit your first job
+
+./MYRUN_ctl.py 0
+
+

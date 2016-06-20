@@ -1,0 +1,17 @@
+[UPWELLING-TESTINSTALL]
+confcase           = UPWELLING-TESTINSTALL
+machine            = workstation
+namelist_skel      = ocean_UPWELLING-TESTINSTALL.template
+use_leap_years     = True
+NtileI             = 2
+NTileJ             = 2
+grid_file          = /Users/raphael/grd.nc
+init_file          = /Users/raphael/ini.nc
+nudging_file       = /Users/raphael/clim.nc
+bdry_file          = /Users/raphael/bdry.nc
+tide_file          = /Users/raphael/tides.nc
+sssr_file          = /Users/raphael/sss.nc
+runoff_file        = /Users/raphael/runoff.nc
+forcing_dir        = /Users/raphael
+output_dir         = /Users/raphael/tmpdir_UPWELLING-TESTINSTALL
+

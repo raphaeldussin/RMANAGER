@@ -1,0 +1,55 @@
+#!/bin/bash
+
+CONTROLDIR=<CDIR>
+PID=$$
+
+# run the code
+if [ -f oceanG ] ; then
+   echo '>>> INFO : running with debug version, delete oceanG from run directory if this is not what you want'
+   mpirun -np <NCORES> ./oceanG <NAMELIST>  > log.<JOB> 2>&1
+elif [ -f oceanM ] ; then
+   mpirun -np <NCORES> ./oceanM <NAMELIST>  > log.<JOB> 2>&1
+else
+   ./oceanS < <NAMELIST>  > log.<JOB> 2>&1
+fi
+
+#------------------------------------------------------------------------------------
+# check the run finished OK
+#------------------------------------------------------------------------------------
+
+check1=$( grep Blowing-up log.<JOB> )
+
+if [ -z $check1 ] ; then
+   echo "run <JOB> did not blow up... continue..."
+else
+   echo "run <JOB> blew up... stopping..."
+   exit 1
+fi
+
+check2=$( grep DONE log.<JOB> | tail -1 | awk '{ print $2 }' )
+if [ ! -z $check2 ] ; then
+   echo "run <JOB> finished OK... continue..."
+else
+   echo "run <JOB> did not finish... stopping..."
+   exit 1
+fi
+
+#------------------------------------------------------------------------------------
+# compress stuff into tar file
+#------------------------------------------------------------------------------------
+
+tar -cf <CASE>.<JOB>.tar log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+gzip <CASE>.<JOB>.tar
+rm log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+
+#------------------------------------------------------------------------------------
+# run finished : daisy chain with the new one
+#------------------------------------------------------------------------------------
+
+# run the next job
+job=<JOB>
+job=$(( $job + 1 ))
+
+echo I am $( hostname ) and I am starting the script for the next job = job $job
+$CONTROLDIR/<CASE>_ctl.py $job
+

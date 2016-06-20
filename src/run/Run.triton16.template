@@ -1,0 +1,77 @@
+#!/bin/bash
+#SBATCH -n <NCORES>
+#SBATCH --time=<WALLTIME>
+#SBATCH -J <CASE>
+#SBATCH --error=<CASE>.%J.err 
+#SBATCH --output=<CASE>.%J.out
+#SBATCH -p triton16
+
+CONTROLDIR=<CDIR>
+
+echo slurm job number is ${SLURM_JOB_ID}
+
+#------------------------------------------------------------------------------------
+# reload modules used at compile time
+#------------------------------------------------------------------------------------
+
+sed '1d' modules-used > modules.dat
+list=$( cat modules.dat | sed -e "s/[0-9])//g" )
+
+module purge
+
+for mod in $list ; do
+    module load $mod
+done
+
+rm modules.dat
+
+#------------------------------------------------------------------------------------
+# run the code
+#------------------------------------------------------------------------------------
+
+if [ -f oceanG ] ; then
+   echo '>>> INFO : running with debug version, delete oceanG from run directory if this is not what you want'
+   srun --cpu_bind=rank -n <NCORES> ./oceanG <NAMELIST>  > log.<JOB>
+else
+   srun --cpu_bind=rank -n <NCORES> ./oceanM <NAMELIST>  > log.<JOB>
+fi
+
+#------------------------------------------------------------------------------------
+# check the run finished OK
+#------------------------------------------------------------------------------------
+
+check1=$( grep Blowing-up log.<JOB> )
+
+if [ -z $check1 ] ; then 
+   echo "run <JOB> did not blow up... continue..."
+else
+   echo "run <JOB> blew up... stopping..."
+   exit 1
+fi
+
+check2=$( grep DONE log.<JOB> | tail -1 | awk '{ print $2 }' )
+if [ ! -z $check2 ] ; then 
+   echo "run <JOB> finished OK... continue..."
+else
+   echo "run <JOB> did not finish... stopping..."
+   exit 1
+fi
+
+#------------------------------------------------------------------------------------
+# compress stuff into tar file
+#------------------------------------------------------------------------------------
+
+tar -cf <CASE>.<JOB>.tar <CASE>.${SLURM_JOB_ID}.err <CASE>.${SLURM_JOB_ID}.out log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+gzip <CASE>.<JOB>.tar
+rm <CASE>.${SLURM_JOB_ID}.err <CASE>.${SLURM_JOB_ID}.out log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+
+#------------------------------------------------------------------------------------
+# run finished : daisy chain with the new one
+#------------------------------------------------------------------------------------
+
+# run the next job 
+job=<JOB>
+job=$(( $job + 1 ))
+
+echo I am $( hostname ) and I am starting the script for the next job = job $job
+ssh node0 $CONTROLDIR/<CASE>_ctl.py $job
