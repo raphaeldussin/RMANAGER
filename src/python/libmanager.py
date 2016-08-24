@@ -334,6 +334,7 @@ class script_maker():
 			line = line.replace('<CDIR>',str(cdir))
 			line = line.replace('<WALLTIME>',str(self.walltime))
 			line = line.replace('<PROJECTCODE>',str(self.projectcode))
+			line = line.replace('<QUEUE>',str(self.queue))
 			fid.write(line)
 		fid.close()
 
@@ -543,9 +544,9 @@ class tidy_your_run():
 		'''copy restart in a safe place'''
 		rstin = self.restart_file
 		rstout = self.restart_file.replace('.nc','.nc' + '.' + str(self.previous_job))
-		status = os_utils.execute('cp ' + self.output_dir + '/' + rstin + ' ' + self.rstdir + '/' + rstout)
+		status = os_utils.execute('rsync -av ' + self.output_dir + '/' + rstin + ' ' + self.rstdir + '/' + rstout)
 		try:
-			status = os_utils.execute('cp ' + self.output_dir + '/ocean_fil*nc' + ' ' + self.rstdir + '/.')
+			status = os_utils.execute('rsync -av ' + self.output_dir + '/ocean_fil*nc' + ' ' + self.rstdir + '/.')
 		except:
 			pass
 		return None
@@ -607,7 +608,7 @@ class setup_simulation():
 				self.scratch = os_utils.get_envvar('SCRATCH')
 			except:
 				exit('SCRATCH environment variable misssing, please add to .bashrc')
-		elif self.machein in ['yellowstone']:
+		elif self.machine in ['yellowstone']:
 			self.scratch = '/glade/scratch/' + self.login
 
 		# find where RMANAGER is installed

@@ -1,45 +1,62 @@
-#!/bin/tcsh -f
+#!/bin/bash
 #BSUB -n <NCORES>
 #BSUB -R "span[ptile=16]"
-#BSUB -q regular
+#BSUB -q <QUEUE>
 #BSUB -N
 #BSUB -x
 #BSUB -a poe
-#BSUB -o roms.stdout.%J
-#BSUB -e roms.stderr.%J
+#BSUB -o <CASE>.<JOB>.out
+#BSUB -e <CASE>.<JOB>.err
 #BSUB -J <CASE>
 #BSUB -W <WALLTIME>
 #BSUB -P <PROJECTCODE>
 
-setenv CONTROLDIR <CDIR>
+#set -x
 
-#-------------------------------------------------------------------------
+CONTROLDIR=<CDIR>
+
+#------------------------------------------------------------------------------------
 # run the code
-mpirun.lsf ./oceanM <NAMELIST>  >&! log.<JOB>
+#------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------
-# control if run blew up or not
+mpirun.lsf ./oceanM <NAMELIST>  > log.<JOB> 
 
-set logfile = 'log.<JOB>'
-set blowup = `grep Blowing-up $logfile`
+#------------------------------------------------------------------------------------
+# check the run finished OK
+#------------------------------------------------------------------------------------
 
-if ( "$blowup" == '' ) then
-   echo '<RMANAGER> Job <JOB> finished OK'
+check1=$( grep Blowing-up log.<JOB> )
+
+if [ -z $check1 ] ; then 
+   echo "run <JOB> did not blow up... continue..."
 else
-   echo '<RMANAGER> Job <JOB> blew up'
+   echo "run <JOB> blew up... stopping..."
    exit 1
-endif
+fi
 
-#-------------------------------------------------------------------------
-# run post-processing in a separate job here ?
+check2=$( grep DONE log.<JOB> | tail -1 | awk '{ print $2 }' )
+if [ ! -z $check2 ] ; then 
+   echo "run <JOB> finished OK... continue..."
+else
+   echo "run <JOB> did not finish... stopping..."
+   exit 1
+fi
 
-#-------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+# compress stuff into tar file
+#------------------------------------------------------------------------------------
+
+tar -cf <CASE>.<JOB>.tar <CASE>.<JOB>.err <CASE>.<JOB>.out log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+gzip <CASE>.<JOB>.tar
+rm <CASE>.<JOB>.err <CASE>.<JOB>.out log.<JOB> <NAMELIST> Run.<CASE>.<JOB>
+
+#------------------------------------------------------------------------------------
 # run finished : daisy chain with the new one
-
-cd $CONTROLDIR
+#------------------------------------------------------------------------------------
 
 # run the next job 
-set job = <JOB>
-@ job++
+job=<JOB>
+job=$(( $job + 1 ))
 
-./<CASE>_ctl.py $job
+echo I am $( hostname ) and I am starting the script for the next job = job $job
+cd $CONTROLDIR ; ./<CASE>_ctl.py $job
