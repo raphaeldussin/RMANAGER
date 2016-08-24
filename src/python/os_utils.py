@@ -24,8 +24,10 @@
 try:
 	import subprocess as sp
 except:
-	import commands as cm
-	import os
+	pass
+
+import commands as cm
+import os
 
 def execute(cmd):
 	''' cmd is the string we want to execute in the shell

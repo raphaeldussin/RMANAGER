@@ -552,7 +552,7 @@ class tidy_your_run():
 
 	def tags_files(self,ftype='avg'):
 		'''rename roms files with a proper datetime tag'''
-		list_files = os_utils.get_output('ls ' + self.output_dir + ' | grep ' + ftype)
+		list_files = os_utils.get_output('ls ' + self.output_dir + ' | grep ' + ftype + ' | grep nc')
 		for myfile in list_files:
 			tag = dtroms.tagfile(self.output_dir + '/' + myfile)
 			if self.use_leap_years == 'True':

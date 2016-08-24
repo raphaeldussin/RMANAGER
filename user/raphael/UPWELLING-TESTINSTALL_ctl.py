@@ -51,7 +51,7 @@ nam_files = ['varinfo.dat']
 dir_nam_files = my_archive + '/' + my_run
 
 # run length
-lastjob=1
+lastjob=2
 
 # job duration (1y/6m/3m/1m)
 jobduration='2d'
