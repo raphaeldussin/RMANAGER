@@ -26,14 +26,17 @@ submission_opts = {}
 #submission_opts['subcmd']      = 'bsub < ./'  # batch scheduler command : bsub, srun, llsubmit,...
 #submission_opts['walltime']    = '10:00'      # walltime
 #submission_opts['projectcode'] = 'ABCD1234'  # project code for accounting
+#submission_opts['queue']       = 'regular'
 # options when you use triton16 or triton24
 #submission_opts['subcmd']      = 'sbatch < ./'  # batch scheduler command : bsub, srun, llsubmit,...
 #submission_opts['walltime']    = '12:00:00'     # walltime
 #submission_opts['projectcode'] = ''             # project code for accounting
+#submission_opts['queue']       = ''
 # options when you use your workstation
 submission_opts['subcmd']      = './'           # batch scheduler command : bsub, srun, llsubmit,...
 submission_opts['walltime']    = ''             # walltime (irrelevant)
 submission_opts['projectcode'] = ''             # project code for accounting (irrelevant)
+submission_opts['queue']       = ''
 
 # init of the run object
 # give the name of the simulation as defined in runs.archive
