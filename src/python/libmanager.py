@@ -628,10 +628,11 @@ class setup_simulation():
 		else:
 			print 'RMANAGER is installed in : ', self.rmanager_root 
 			print 'If this seems incorrect, please check your install, paths,...'
+			print 'You can now run setup = libmanager.setup_simulation()'
 		# define where user will create the run folder
 		self.myrmanager = self.rmanager_root + 'user/' + self.user
 		print 'Your user space is ', self.myrmanager
-		print 'You can now run setup'
+		print 'You can now run setup()'
 		return None
 
 	def __call__(self):
@@ -641,6 +642,7 @@ class setup_simulation():
 		self._create_archive_entry()
 		self._create_build_script()
 		print 'Setup Complete'
+		exit()
 		return None
 
 	def _run_naming(self):
