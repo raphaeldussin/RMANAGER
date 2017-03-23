@@ -51,5 +51,5 @@ job=<JOB>
 job=$(( $job + 1 ))
 
 echo I am $( hostname ) and I am starting the script for the next job = job $job
-$CONTROLDIR/<CASE>_ctl.py $job
+cd $CONTROLDIR ; ./<CASE>_ctl.py $job
 

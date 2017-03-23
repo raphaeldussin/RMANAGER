@@ -545,9 +545,11 @@ class tidy_your_run():
 		rstin = self.restart_file
 		rstout = self.restart_file.replace('.nc','.nc' + '.' + str(self.previous_job))
 		status = os_utils.execute('rsync -av ' + self.output_dir + '/' + rstin + ' ' + self.rstdir + '/' + rstout)
-		try:
+		# tidal filter files
+		list_filtered = os_utils.get_output('ls ' + self.output_dir + ' | grep ocean_fil*nc')
+		if len(list_filtered) > 0:
 			status = os_utils.execute('rsync -av ' + self.output_dir + '/ocean_fil*nc' + ' ' + self.rstdir + '/.')
-		except:
+		else:
 			pass
 		return None
 
