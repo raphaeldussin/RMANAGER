@@ -504,6 +504,9 @@ class tidy_your_run():
 		# move outputs files
 		self.archive_output()
 
+		# write logs
+		self.write_log_timeline()
+
 		return None
 
 	def create_archive_dir(self):
@@ -583,6 +586,32 @@ class tidy_your_run():
 		for myfile in list_files:
 			year = myfile.replace(self.confcase,'').replace('_',' ').replace('-',' ').split()[1]
 			status = os_utils.execute('mv ' + self.output_dir + '/' + myfile + ' ' + self.sarchive_dir + '/' + str(year) + '/.')
+		return None
+
+	def write_log_timeline(self):
+		''' write the current status of run time line in a log file '''
+		ftimeline = self.sarchive_dir + '/timeline_run'
+		# if file already exists, load it
+		check = os_utils.execute('test -f ' + ftimeline )
+		if check ==0:
+			f = open(ftimeline,'r') ; lines = f.readlines() ; f.close()
+			list_timeline = []
+			for line in lines:
+				list_timeline.append(line.split()[0])
+			print 'already in timeline_run :', list_timeline
+			# update timeline
+			list_timeline.extend(self.list_years)
+			list_timeline = list(set(list_timeline))
+			print 'timeline updated :', list_timeline
+		else:
+			list_timeline = self.list_years
+			list_timeline = list(set(list_timeline))
+			print 'new timeline_run', list_timeline
+		# overwrite with the new list
+		f = open(ftimeline,'w')
+		for year in list_timeline:
+			f.write( year + '\n')
+		f.close()
 		return None
 
 ###########################################################################################################
