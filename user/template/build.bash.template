@@ -401,6 +401,11 @@ fi
 
  cd ${MY_ROMS_SRC}
 
+ echo 'compiled on '  >> ${MY_PROJECT_DIR}/version
+ date                 >> ${MY_PROJECT_DIR}/version
+ echo 'ROMS version'  >> ${MY_PROJECT_DIR}/version
+ git log -p | head -1 >> ${MY_PROJECT_DIR}/version
+
 # Remove build directory.
 
 if [ $clean -eq 1 ]; then
