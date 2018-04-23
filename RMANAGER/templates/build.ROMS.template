@@ -80,12 +80,12 @@ done
 # determine the name of the ".h" header file with the application
 # CPP definitions.
 
-export   ROMS_APPLICATION=<ROMS_APP>
+export   ROMS_APPLICATION=<MODEL_APP>
 
 # Set a local environmental variable to define the path to the directories
 # where all this project's files are kept.
 
-export        MY_ROOT_DIR=<ROMS_DIR>
+export        MY_ROOT_DIR=<MODEL_DIR>
 export     MY_PROJECT_DIR=${PWD}
 
 # The path to the user's local current ROMS source code.
