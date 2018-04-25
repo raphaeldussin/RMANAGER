@@ -1,0 +1,17 @@
+[<MY_RUN>]
+confcase           = <MY_RUN>
+machine            = <MACHINE>
+namelist_skel      = ocean_<MY_RUN>.template
+use_leap_years     = True
+NtileI             = 1
+NTileJ             = 1
+grid_file          = <INPUTDIR>/grd.nc
+init_file          = <INPUTDIR>/ini.nc
+nudging_file       = <INPUTDIR>/clim.nc
+bdry_file          = <INPUTDIR>/bdry.nc
+tide_file          = <INPUTDIR>/tides.nc
+sssr_file          = <INPUTDIR>/sss.nc
+runoff_file        = <INPUTDIR>/runoff.nc
+forcing_dir        = <INPUTDIR>
+output_dir         = <MY_TMPDIR>
+

@@ -68,7 +68,7 @@ class SetupSimulation():
 		self._run_naming()
 		self._create_run_directory()
 		self._create_script()
-		#self._create_archive_entry()
+		self._create_archive_entry()
 		self._create_build_script()
 		print 'Setup Complete'
 		return None
@@ -103,23 +103,23 @@ class SetupSimulation():
         def _create_script(self):
                 '''create control script for one run '''
                 fidr = open( self.rmanager_root + '/templates/template_script_ctl.py', 'r' )
-                fidw = open( self.myrmanager + '/' + self.runname + '_ctl.py', 'w' )
+                fidw = open( self.myrmanager + '/' + self.runname + '/' + self.runname + '_ctl.py', 'w' )
                 for line in fidr.readlines():
                         fidw.write( line.replace( '<MY_RMANAGER>', self.myrmanager ).replace( '<MY_RUN>', self.runname ) )
                 fidr.close()
                 fidw.close()
-		os_utils.execute('chmod +x ' + self.myrmanager + '/' + self.runname + '_ctl.py' )
+		os_utils.execute('chmod +x ' + self.myrmanager + '/' + self.runname + '/' + self.runname + '_ctl.py' )
                 return None
 
-#	def _create_archive_entry(self):
-#                '''add an entry in runs.archive for one run '''
-#                fidr = open( self.rmanager_root + 'user/template/runs.archive.template', 'r' )
-#                fidw = open( self.myrmanager + '/' + 'runs.archive', 'a' )
-#                for line in fidr.readlines():
-#                        fidw.write( line.replace( '<MACHINE>', self.machine ).replace( '<MY_RUN>', self.runname ).replace( '<MY_TMPDIR>', self.tmpdir ).replace( '<SCRATCH>', self.scratch ) )
-#		fidr.close()
-#		fidw.close()
-#                return None
+	def _create_archive_entry(self):
+                '''add an entry in runs.archive for one run '''
+                fidr = open( self.rmanager_root + '/templates/runs.archive.' + self.model + '.template', 'r' )
+                fidw = open( self.myrmanager + '/' + self.runname + '/' + 'runs.archive', 'w' )
+                for line in fidr.readlines():
+                        fidw.write( line.replace( '<MACHINE>', self.machine ).replace( '<MY_RUN>', self.runname ).replace( '<MY_TMPDIR>', self.tmpdir ).replace( '<INPUTDIR>', self.scratch + '/RUNS_' + self.model ) )
+		fidr.close()
+		fidw.close()
+                return None
 		
 	def _create_build_script(self):
 		'''create custom build.bash script '''
