@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import libmanager as rr
+from RMANAGER import run_manager as rm
 import sys
 
 #--------------------------------------------------------------------------------------------------------------#
@@ -40,7 +40,7 @@ submission_opts['queue']       = ''
 
 # init of the run object
 # give the name of the simulation as defined in runs.archive
-run = rr.run_manager(my_run, my_archive,submission_opts)
+run = rm.RunManager(my_run, my_archive,submission_opts)
 
 # secondary namelists : put here the name of the files that need to be copied
 # to the run directory.

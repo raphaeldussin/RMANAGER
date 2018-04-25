@@ -105,7 +105,7 @@ class SetupSimulation():
                 fidr = open( self.rmanager_root + '/templates/template_script_ctl.py', 'r' )
                 fidw = open( self.myrmanager + '/' + self.runname + '/' + self.runname + '_ctl.py', 'w' )
                 for line in fidr.readlines():
-                        fidw.write( line.replace( '<MY_RMANAGER>', self.myrmanager ).replace( '<MY_RUN>', self.runname ) )
+                        fidw.write( line.replace( '<MY_RMANAGER>', self.myrmanager + '/' + self.runname ).replace( '<MY_RUN>', self.runname ) )
                 fidr.close()
                 fidw.close()
 		os_utils.execute('chmod +x ' + self.myrmanager + '/' + self.runname + '/' + self.runname + '_ctl.py' )
